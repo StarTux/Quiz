@@ -1,0 +1,21 @@
+name: Quiz
+description: Public quiz with prizes
+author: StarTux
+version: 0.1
+main: com.winthier.quiz.QuizPlugin
+depend: []
+commands:
+  quiz:
+    description: Quiz interface
+    permission: quiz.quiz
+  quizadmin:
+    description: Admin interface
+    permission: quiz.admin
+    usage: /<command> list|clear|tick|activate|prize|reload
+permissions:
+  quiz.quiz:
+    description: Click chat to claim a prize
+    default: true
+  quiz.admin:
+    description: Use the admin interface
+    default: op
