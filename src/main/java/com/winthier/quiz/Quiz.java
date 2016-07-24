@@ -122,6 +122,7 @@ class Quiz {
             message.add(button);
             String answer = question.answers.get(i);
             button.put("text", QuizPlugin.format("&r[&a%s&r]", answer));
+            button.put("color", "green");
             Map<String, Object> clickEvent = new HashMap<>();
             button.put("clickEvent", clickEvent);
             clickEvent.put("action", "run_command");
