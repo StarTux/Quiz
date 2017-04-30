@@ -2,6 +2,7 @@ interval:
   Median: 90
   Variance: 30
   MinPlayers: 10
+  AnswerTime: 10
 prizes:
 - Description: 100 Credits
   Commands: [ 'money grant {player} 100' ]

@@ -36,7 +36,7 @@ public final class QuizPlugin extends JavaPlugin {
                 tick();
             }
         };
-        task.runTaskTimer(this, 20L * 60L + 27L, 20L * 60L);
+        task.runTaskTimer(this, 27L, 20L);
     }
 
     @Override
@@ -149,10 +149,11 @@ public final class QuizPlugin extends JavaPlugin {
     void tick() {
         final int playerCount = getServer().getOnlinePlayers().size();
         final int minPlayers = getConfig().getInt(Config.INTERVAL_MIN_PLAYERS.key);
-        if (playerCount < minPlayers) return;
         int unclaimedCount = 0;
         for (Quiz quiz : quizzes.values()) {
-            quiz.tick();
+            if (quiz.isActive() || playerCount >= minPlayers) {
+                quiz.tick();
+            }
             if (!quiz.isClaimed()) unclaimedCount++;
         }
         if (unclaimedCount == 0) {

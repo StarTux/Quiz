@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 
 /**
  * A quiz is a prize which can be claimed by clicking the
  * displayed line in chat first.
  */
+@Getter
 final class Quiz {
     final QuizPlugin plugin;
     private final UUID uuid;
@@ -21,7 +23,9 @@ final class Quiz {
     // State
     private State state = State.WARMUP;
     private int timer;
-    private final Set<UUID> answeredWrong = new HashSet<>();
+    private int answerTimer;
+    private final Set<UUID> playersAnswered = new HashSet<>();
+    private final Set<UUID> winners = new HashSet<>();
 
     /**
      * @arg delay Delay until activation, in seconds
@@ -40,7 +44,7 @@ final class Quiz {
         final Prize prize = plugin.dealPrize();
         final int median = plugin.getConfig().getInt(Config.INTERVAL_MEDIAN.key);
         final int variance = plugin.getConfig().getInt(Config.INTERVAL_VARIANCE.key);
-        final int delay = plugin.randomInt(median, variance);
+        final int delay = plugin.randomInt(median * 60, variance * 60);
         return new Quiz(plugin, uuid, question, prize, delay);
     }
 
@@ -49,12 +53,15 @@ final class Quiz {
         switch (state) {
         case WARMUP:
             if (newTimer <= 0) {
-                state = State.ACTIVE;
-                announce();
+                activate();
             }
             break;
         case ACTIVE:
-            announce();
+            answerTimer -= 1;
+            if (answerTimer <= 0) {
+                state = State.CLAIMED;
+                pickWinner();
+            }
             break;
         default:
             return;
@@ -66,22 +73,19 @@ final class Quiz {
         case WARMUP:
             break;
         case ACTIVE:
-            if (answeredWrong.contains(player.getUniqueId())) {
+            if (playersAnswered.contains(player.getUniqueId())) {
                 QuizPlugin.msg(player, "&cYou already answered.");
-            } else if (answer != question.correctAnswer) {
-                answeredWrong.add(player.getUniqueId());
-                QuizPlugin.msg(player, "&c%s is not the right answer.", question.getAnswer(answer));
             } else {
-                state = State.CLAIMED;
-                QuizPlugin.announce("&3&lQuiz &r%s answered &a%s&r and wins &a%s&r.", player.getName(), question.getCorrectAnswer(), prize.getDescription());
-                prize.give(player);
+                playersAnswered.add(player.getUniqueId());
+                QuizPlugin.msg(player, "&aYour answer is \"%s\". A winner will be picked shortly.", question.getAnswer(answer));
+                if (answer == question.correctAnswer) winners.add(player.getUniqueId());
             }
             break;
         case CLAIMED:
             QuizPlugin.msg(player, "&cYou are too late. Better luck next time!");
             break;
         default:
-            return;
+            break;
         }
     }
 
@@ -94,7 +98,12 @@ final class Quiz {
     }
 
     void activate() {
-        if (state == State.WARMUP) state = State.ACTIVE;
+        if (state == State.WARMUP) {
+            state = State.ACTIVE;
+            plugin.getLogger().info("Activate: " + question.question + " " + question.answers);
+            answerTimer = plugin.getConfig().getInt(Config.INTERVAL_ANSWER_TIME.key);
+            announce();
+        }
     }
 
     boolean isActive() {
@@ -105,17 +114,9 @@ final class Quiz {
         return state == State.CLAIMED;
     }
 
-    String getState() {
-        return state.name();
-    }
-
-    int getTimer() {
-        return timer;
-    }
-
     void announce() {
         QuizPlugin.announce("");
-        QuizPlugin.announce("&3&lQuiz &7&oBe first to click the right answer.");
+        QuizPlugin.announce("&3&lQuiz &7&oClick the right answer within %d seconds.", answerTimer);
         QuizPlugin.announce(" &3Q &r%s", question.question);
         List<Object> message = new ArrayList<>();
         message.add(QuizPlugin.format(" &3A"));
@@ -138,6 +139,22 @@ final class Quiz {
         QuizPlugin.announceRaw(message);
         QuizPlugin.announce(" &7&oThe winner gets %s.", prize.getDescription());
         QuizPlugin.announce("");
+    }
+
+    void pickWinner() {
+        if (winners.isEmpty()) {
+            plugin.getLogger().info("No winners!");
+        } else {
+            UUID winnerId = new ArrayList<UUID>(winners).get(plugin.getRandom().nextInt(winners.size()));
+            Player player = plugin.getServer().getPlayer(winnerId);
+            if (player == null) {
+                plugin.getLogger().info("Winner left: " + winnerId);
+            } else {
+                plugin.getLogger().info(player.getName() + " wins " + prize.getDescription());
+                QuizPlugin.announce("&3&lQuiz &r%s answered &a%s&r and wins &a%s&r.", player.getName(), question.getCorrectAnswer(), prize.getDescription());
+                prize.give(player);
+            }
+        }
     }
 
     enum State {

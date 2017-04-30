@@ -4,6 +4,7 @@ public enum Config {
     INTERVAL_MEDIAN("interval.Median"),
     INTERVAL_VARIANCE("interval.Variance"),
     INTERVAL_MIN_PLAYERS("interval.MinPlayers"),
+    INTERVAL_ANSWER_TIME("interval.AnswerTime"),
     PRIZE_SECTION("prizes"),
     QUESTION_SECTION("questions");
 
