@@ -15,8 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONValue;
 
-public class QuizPlugin extends JavaPlugin {
-    @Getter static QuizPlugin instance;
+public final class QuizPlugin extends JavaPlugin {
+    @Getter private static QuizPlugin instance;
     private final Map<UUID, Quiz> quizzes = new HashMap<>();
     private Random random = null;
     private List<Prize> prizes;

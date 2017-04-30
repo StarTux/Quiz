@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class QuizCommand implements CommandExecutor {
+public final class QuizCommand implements CommandExecutor {
     private final QuizPlugin plugin;
 
     public QuizCommand(QuizPlugin plugin) {
@@ -18,7 +18,7 @@ public class QuizCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String args[]) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Player expected");
             return true;

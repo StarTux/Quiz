@@ -31,13 +31,13 @@ class Question {
         for (int i = 0; i < orig.answers.size(); ++i) indices.add(i);
         Collections.shuffle(indices, QuizPlugin.getInstance().getRandom());
         answers = new ArrayList<>(indices.size());
-        int correctAnswer = 0;
+        int answer = 0;
         for (int i = 0; i < indices.size(); ++i) {
             int index = indices.get(i);
             answers.add(orig.answers.get(index));
-            if (index == orig.correctAnswer) correctAnswer = i;
+            if (index == orig.correctAnswer) answer = i;
         }
-        this.correctAnswer = correctAnswer;
+        this.correctAnswer = answer;
     }
 
     Question shuffle() {

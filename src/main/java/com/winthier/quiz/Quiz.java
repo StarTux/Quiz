@@ -7,14 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
  * A quiz is a prize which can be claimed by clicking the
  * displayed line in chat first.
  */
-class Quiz {
+final class Quiz {
     final QuizPlugin plugin;
     private final UUID uuid;
     private final Question question;
@@ -46,10 +45,10 @@ class Quiz {
     }
 
     void tick() {
-        final int timer = this.timer--;
+        final int newTimer = this.timer--;
         switch (state) {
         case WARMUP:
-            if (timer <= 0) {
+            if (newTimer <= 0) {
                 state = State.ACTIVE;
                 announce();
             }
@@ -57,6 +56,8 @@ class Quiz {
         case ACTIVE:
             announce();
             break;
+        default:
+            return;
         }
     }
 
@@ -79,6 +80,8 @@ class Quiz {
         case CLAIMED:
             QuizPlugin.msg(player, "&cYou are too late. Better luck next time!");
             break;
+        default:
+            return;
         }
     }
 
@@ -137,10 +140,9 @@ class Quiz {
         QuizPlugin.announce("");
     }
 
-    private static enum State {
+    enum State {
         WARMUP,
         ACTIVE,
-        CLAIMED,
-        ;
+        CLAIMED;
     }
 }

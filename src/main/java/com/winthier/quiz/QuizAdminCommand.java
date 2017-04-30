@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class QuizAdminCommand implements CommandExecutor {
+public final class QuizAdminCommand implements CommandExecutor {
     private final QuizPlugin plugin;
 
     public QuizAdminCommand(QuizPlugin plugin) {
@@ -49,7 +49,11 @@ public class QuizAdminCommand implements CommandExecutor {
             } else if (args.length == 2) {
                 if (!(sender instanceof Player)) return false;
                 int i;
-                try { i = Integer.parseInt(args[1]); } catch (NumberFormatException nfe) { return false; }
+                try {
+                    i = Integer.parseInt(args[1]);
+                } catch (NumberFormatException nfe) {
+                    return false;
+                }
                 List<Prize> prizes = plugin.getPrizes();
                 if (i < 0 || i > prizes.size()) return false;
                 Prize prize = prizes.get(i - 1);
