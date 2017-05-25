@@ -32,7 +32,11 @@ public final class QuizAdminCommand implements CommandExecutor {
         } else if ("list".equalsIgnoreCase(args[0]) && args.length == 1) {
             plugin.msg(sender, "&eListing of quizzes:");
             for (Quiz quiz : plugin.getQuizzes()) {
-                plugin.msg(sender, "&e %s (%d|%d) %s", quiz.getState(), quiz.getTimer() / 60, quiz.getAnswerTimer(), quiz.getPrize().getDescription());
+                if (quiz.isActive()) {
+                    plugin.msg(sender, "&e %s (%d) %s", quiz.getState(), quiz.getAnswerTimer(), quiz.getPrize().getDescription());
+                } else {
+                    plugin.msg(sender, "&e %s (%d) %s", quiz.getState(), quiz.getTimer() / 60, quiz.getPrize().getDescription());
+                }
             }
             QuizPlugin.msg(sender, "&e---");
         } else if ("clear".equalsIgnoreCase(args[0]) && args.length == 1) {
