@@ -3,7 +3,6 @@ package com.winthier.quiz;
 import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +46,7 @@ public final class QuizCommand implements CommandExecutor {
                 total.put(entry.getKey(), entry.getValue().get(0) - entry.getValue().get(1));
                 list.add(entry.getKey());
             }
-            Collections.sort(list, new Comparator<UUID>() {
-                    @Override public int compare(UUID a, UUID b) {
-                        return Integer.compare(total.get(b), total.get(a));
-                    }
-                });
+            Collections.sort(list, (a, b) -> Integer.compare(total.get(b), total.get(a)));
             sender.sendMessage("" + ChatColor.DARK_AQUA + ChatColor.BOLD + "Quiz Highscore");
             for (int i = 0; i < 10; i += 1) {
                 if (i >= list.size()) break;
