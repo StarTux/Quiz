@@ -3,6 +3,7 @@ interval:
   Variance: 30
   MinPlayers: 10
   AnswerTime: 10
+  Seconds: 40
 prizes:
 - Description: 100 Credits
   Commands: [ 'money grant {player} 100' ]

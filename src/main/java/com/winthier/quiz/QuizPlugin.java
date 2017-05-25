@@ -1,20 +1,27 @@
 package com.winthier.quiz;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONValue;
 
+@Getter
 public final class QuizPlugin extends JavaPlugin {
     @Getter private static QuizPlugin instance;
     private final Map<UUID, Quiz> quizzes = new HashMap<>();
@@ -23,6 +30,8 @@ public final class QuizPlugin extends JavaPlugin {
     private List<Question> questions;
     private int questionIndex = 0;
     private BukkitRunnable task = null;
+    private final Set<UUID> optouts = new HashSet<>();
+    private Map<UUID, List<Integer>> highscores;
 
     @Override
     public void onEnable() {
@@ -42,6 +51,10 @@ public final class QuizPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         task.cancel();
+    }
+
+    void flushCaches() {
+        highscores = null;
     }
 
     Random getRandom() {
@@ -70,9 +83,7 @@ public final class QuizPlugin extends JavaPlugin {
     int randomInt(int median, int variance) {
         if (variance == 0) return median;
         Random rnd = getRandom();
-        return median
-            + rnd.nextInt(variance)
-            - rnd.nextInt(variance);
+        return median - variance + rnd.nextInt(variance * 2);
     }
 
     void reloadPrizes() {
@@ -129,16 +140,18 @@ public final class QuizPlugin extends JavaPlugin {
         sender.sendMessage(format(msg, args));
     }
 
-    static void announce(String msg, Object... args) {
+    void announce(String msg, Object... args) {
         msg = format(msg, args);
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (optouts.contains(player.getUniqueId())) continue;
             player.sendMessage(msg);
         }
     }
 
-    static void announceRaw(Object json) {
+    void announceRaw(Object json) {
         String msg = JSONValue.toJSONString(json);
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (optouts.contains(player.getUniqueId())) continue;
             consoleCommand("tellraw " + player.getName() + " " + msg);
         }
     }
@@ -160,5 +173,39 @@ public final class QuizPlugin extends JavaPlugin {
             Quiz quiz = Quiz.createQuiz(this);
             quizzes.put(quiz.getUuid(), quiz);
         }
+    }
+
+    Map<UUID, List<Integer>> getHighscores() {
+        if (highscores == null) {
+            highscores = new HashMap<>();
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "highscores.yml"));
+            for (String key: config.getKeys(false)) {
+                highscores.put(UUID.fromString(key), config.getIntegerList(key));
+            }
+        }
+        return highscores;
+    }
+
+    void saveHighscores() {
+        if (highscores == null) return;
+        YamlConfiguration config = new YamlConfiguration();
+        for (UUID uuid: highscores.keySet()) {
+            config.set(uuid.toString(), highscores.get(uuid));
+        }
+        try {
+            config.save(new File(getDataFolder(), "highscores.yml"));
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    void addHighscore(Player player, int correct, int wrong) {
+        List<Integer> score = getHighscores().get(player.getUniqueId());
+        if (score == null) {
+            score = Arrays.asList(correct, wrong);
+        } else {
+            score = Arrays.asList(score.get(0) + correct, score.get(1) + wrong);
+        }
+        getHighscores().put(player.getUniqueId(), score);
     }
 }

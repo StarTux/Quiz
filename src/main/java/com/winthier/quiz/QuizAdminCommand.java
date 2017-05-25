@@ -1,6 +1,8 @@
 package com.winthier.quiz;
 
+import com.winthier.playercache.PlayerCache;
 import java.util.List;
+import java.util.UUID;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,10 +34,14 @@ public final class QuizAdminCommand implements CommandExecutor {
         } else if ("list".equalsIgnoreCase(args[0]) && args.length == 1) {
             plugin.msg(sender, "&eListing of quizzes:");
             for (Quiz quiz : plugin.getQuizzes()) {
-                if (quiz.isActive()) {
+                if (quiz.isClaimed()) {
+                    UUID winnerId = quiz.getWinner();
+                    String name = winnerId == null ? "Nobody" : PlayerCache.nameForUuid(winnerId);
+                    plugin.msg(sender, "&e %s (%d) %s - %s", quiz.getState(), quiz.getAnswerTimer(), quiz.getPrize().getDescription(), name);
+                } else if (quiz.isActive()) {
                     plugin.msg(sender, "&e %s (%d) %s", quiz.getState(), quiz.getAnswerTimer(), quiz.getPrize().getDescription());
                 } else {
-                    plugin.msg(sender, "&e %s (%d) %s", quiz.getState(), quiz.getTimer() / 60, quiz.getPrize().getDescription());
+                    plugin.msg(sender, "&e %s (%d:%02d) %s", quiz.getState(), quiz.getTimer() / 60, quiz.getTimer() % 60, quiz.getPrize().getDescription());
                 }
             }
             QuizPlugin.msg(sender, "&e---");
@@ -70,6 +76,7 @@ public final class QuizAdminCommand implements CommandExecutor {
             plugin.reloadConfig();
             plugin.reloadPrizes();
             plugin.reloadQuestions();
+            plugin.flushCaches();
             QuizPlugin.msg(sender, "&eConfiguration reloaded");
         } else {
             return false;

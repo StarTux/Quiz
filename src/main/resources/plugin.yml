@@ -1,13 +1,17 @@
 name: Quiz
+version: 0.1
 description: Public quiz with prizes
 author: StarTux
-version: 0.1
+website: http://www.winthier.com
 main: com.winthier.quiz.QuizPlugin
-depend: []
+depend: [ PlayerCache ]
 commands:
   quiz:
     description: Quiz interface
     permission: quiz.quiz
+    usage: |-
+      /quiz optout - Opt out
+      /quiz optin - Opt back in
   quizadmin:
     description: Admin interface
     permission: quiz.admin
