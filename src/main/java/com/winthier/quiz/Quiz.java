@@ -176,21 +176,21 @@ final class Quiz {
     }
 
     void pickWinner() {
-        if (winners.isEmpty()) {
+        Player player = null;
+        List<UUID> winnerList = new ArrayList<>(winners);
+        while (player == null && !winnerList.isEmpty()) {
+            UUID winnerId = winnerList.remove(plugin.getRandom().nextInt(winnerList.size()));
+            player = plugin.getServer().getPlayer(winnerId);
+            if (player == null) plugin.getLogger().info("Winner left: " + winnerId);
+        }
+        if (player == null) {
             plugin.getLogger().info("No winners!");
             plugin.announce("&3&lQuiz &rNobody knew the correct answer: &a%s&r.", question.getCorrectAnswer());
         } else {
-            UUID winnerId = new ArrayList<UUID>(winners).get(plugin.getRandom().nextInt(winners.size()));
-            this.winner = winnerId;
-            Player player = plugin.getServer().getPlayer(winnerId);
-            if (player == null) {
-                plugin.getLogger().info("Winner left: " + winnerId);
-                plugin.announce("&3&lQuiz &rNobody knew the correct answer: &a%s&r.", question.getCorrectAnswer());
-            } else {
-                plugin.getLogger().info(player.getName() + " wins " + prize.getDescription());
-                plugin.announce("&3&lQuiz &r%s answered &a%s&r and wins &a%s&r.", player.getName(), question.getCorrectAnswer(), prize.getDescription());
-                prize.give(player);
-            }
+            this.winner = player.getUniqueId();
+            plugin.getLogger().info(player.getName() + " wins " + prize.getDescription());
+            plugin.announce("&3&lQuiz &r%s answered &a%s&r and wins &a%s&r.", player.getName(), question.getCorrectAnswer(), prize.getDescription());
+            prize.give(player);
         }
     }
 
