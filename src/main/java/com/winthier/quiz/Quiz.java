@@ -91,9 +91,9 @@ final class Quiz {
                 QuizPlugin.msg(player, "&aYour answer is \"%s\". A winner will be picked shortly.", question.getAnswer(answer));
                 if (answer == question.correctAnswer) {
                     winners.add(player.getUniqueId());
-                    plugin.addHighscore(player, 1, 0);
+                    plugin.addHighscore(player, 1);
                 } else {
-                    plugin.addHighscore(player, 0, 1);
+                    plugin.addHighscore(player, -1);
                 }
             }
             break;

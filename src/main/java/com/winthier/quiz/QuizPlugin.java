@@ -3,7 +3,6 @@ package com.winthier.quiz;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +30,7 @@ public final class QuizPlugin extends JavaPlugin {
     private int questionIndex = 0;
     private BukkitRunnable task = null;
     private final Set<UUID> optouts = new HashSet<>();
-    private Map<UUID, List<Integer>> highscores;
+    private Map<UUID, Integer> highscores;
 
     @Override
     public void onEnable() {
@@ -175,12 +174,12 @@ public final class QuizPlugin extends JavaPlugin {
         }
     }
 
-    Map<UUID, List<Integer>> getHighscores() {
+    Map<UUID, Integer> getHighscores() {
         if (highscores == null) {
             highscores = new HashMap<>();
             YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "highscores.yml"));
             for (String key: config.getKeys(false)) {
-                highscores.put(UUID.fromString(key), config.getIntegerList(key));
+                highscores.put(UUID.fromString(key), config.getInt(key));
             }
         }
         return highscores;
@@ -199,13 +198,10 @@ public final class QuizPlugin extends JavaPlugin {
         }
     }
 
-    void addHighscore(Player player, int correct, int wrong) {
-        List<Integer> score = getHighscores().get(player.getUniqueId());
-        if (score == null) {
-            score = Arrays.asList(correct, wrong);
-        } else {
-            score = Arrays.asList(score.get(0) + correct, score.get(1) + wrong);
-        }
+    void addHighscore(Player player, int amount) {
+        Integer score = getHighscores().get(player.getUniqueId());
+        if (score == null) score = 0;
+        score = Math.max(0, score + amount);
         getHighscores().put(player.getUniqueId(), score);
     }
 }

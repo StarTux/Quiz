@@ -3,7 +3,6 @@ package com.winthier.quiz;
 import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,10 +39,10 @@ public final class QuizCommand implements CommandExecutor {
             plugin.getOptouts().remove(player.getUniqueId());
             player.sendMessage(ChatColor.AQUA + "Opted into the quiz.");
         } else if (args.length == 1 && (args[0].equalsIgnoreCase("hi") || args[0].equalsIgnoreCase("highscore"))) {
-            Map<UUID, Integer> total = new HashMap<>();
+            Map<UUID, Integer> total = plugin.getHighscores();
             List<UUID> list = new ArrayList<>();
-            for (Map.Entry<UUID, List<Integer>> entry: plugin.getHighscores().entrySet()) {
-                total.put(entry.getKey(), entry.getValue().get(0) - entry.getValue().get(1));
+            for (Map.Entry<UUID, Integer> entry: total.entrySet()) {
+                total.put(entry.getKey(), entry.getValue());
                 list.add(entry.getKey());
             }
             Collections.sort(list, (a, b) -> Integer.compare(total.get(b), total.get(a)));

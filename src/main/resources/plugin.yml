@@ -12,6 +12,7 @@ commands:
     usage: |-
       /quiz optout - Opt out
       /quiz optin - Opt back in
+      /quiz hi - Highscore
   quizadmin:
     description: Admin interface
     permission: quiz.admin
