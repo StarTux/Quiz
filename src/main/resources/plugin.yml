@@ -1,8 +1,9 @@
 name: Quiz
-version: 0.1
 description: Public quiz with prizes
 author: StarTux
-website: http://www.winthier.com
+version: 0.1
+api-version: 1.13
+website: http://cavetale.com
 main: com.winthier.quiz.QuizPlugin
 depend: [ PlayerCache ]
 commands:
