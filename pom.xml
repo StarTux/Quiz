@@ -1,35 +1,49 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.winthier.quiz</groupId>
   <artifactId>quiz</artifactId>
-  <packaging>jar</packaging>
   <version>0.1-SNAPSHOT</version>
+
   <name>Quiz</name>
+  <packaging>jar</packaging>
   <url>http://cavetale.com</url>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <repositories>
+
     <!-- Spigot Repo -->
     <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
     </repository>
+
+    <!-- Cavetale Repo -->
+    <repository>
+      <id>cavetale</id>
+      <url>https://cavetale.com/jenkins/plugin/repository/everything/</url>
+    </repository>
+
   </repositories>
   <dependencies>
+
     <!-- Spigot-API -->
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
       <version>1.16.3-R0.1-SNAPSHOT</version>
     </dependency>
+
     <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.12</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
+
     <!-- PlayerCache -->
     <dependency>
       <groupId>com.winthier.playercache</groupId>
@@ -37,9 +51,11 @@
       <version>0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
+
   </dependencies>
   <build>
     <plugins>
+
       <!-- Java 8 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -55,6 +71,7 @@
           </compilerArgs>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 </project>

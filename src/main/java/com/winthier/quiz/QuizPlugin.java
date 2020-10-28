@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import com.google.gson.Gson;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,7 +19,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.json.simple.JSONValue;
 
 @Getter
 public final class QuizPlugin extends JavaPlugin {
@@ -68,7 +68,7 @@ public final class QuizPlugin extends JavaPlugin {
     }
 
     List<Quiz> getQuizzes() {
-        return new ArrayList<Quiz>(quizzes.values());
+        return new ArrayList<>(quizzes.values());
     }
 
     void clearQuizzes() {
@@ -148,7 +148,7 @@ public final class QuizPlugin extends JavaPlugin {
     }
 
     void announceRaw(Object json) {
-        String msg = JSONValue.toJSONString(json);
+        String msg = new Gson().toJson(json);
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (optouts.contains(player.getUniqueId())) continue;
             consoleCommand("tellraw " + player.getName() + " " + msg);
